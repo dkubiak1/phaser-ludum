@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "phaser-ce": "^2.11.0"
+    "express":"*"
+
   }
 }
