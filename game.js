@@ -210,6 +210,8 @@ function preload() {
 
     game.load.image('target', 'assets/target.gif');
 
+    game.load.spritesheet('power-up', 'assets/coins.jpg', 300, 300, 6);
+
 }   
 
 var sprite;
@@ -222,6 +224,7 @@ var bow;
 
 var bulletTime = 0;
 var bullet;
+var bullet2;
 
 var target;
 var dir;
@@ -246,6 +249,9 @@ var grd;
 
 var timer;
 var charge = false;
+
+var weapon = 'default';
+var ammo = Infinity;
 function create() {
 
     game.world.setBounds(0, 0, 2048, 1325);
@@ -305,6 +311,7 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
     game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
     game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SHIFT ]);
+
     bullets = game.add.group();
     bullets.enableBody = true;
   
@@ -312,6 +319,14 @@ function create() {
     
     bullets.setAll('checkWorldBounds', true);
     bullets.setAll('outOfBoundsKill', true);
+
+    bullets2 = game.add.group();
+    bullets2.enableBody = true;
+  
+    game.physics.enable(bullets2, Phaser.Physics.ARCADE);
+    
+    bullets2.setAll('checkWorldBounds', true);
+    bullets2.setAll('outOfBoundsKill', true);
 
     enemyBullets = game.add.group();
     enemyBullets.enableBody = true;
@@ -359,6 +374,18 @@ function create() {
     for (var i = 0; i < 50; i++)
     {
         var b = bullets.create(0, 0, 'bullet');
+        b.name = 'bullet' + i;
+        b.width = 50;
+        b.height = 50;
+        b.exists = false;
+        b.visible = false;      
+        b.body.bounce.set(0.8);       
+        b.anchor.setTo(0.5);              
+    }
+
+    for (var i = 0; i < 100; i++)
+    {
+        var b = bullets2.create(0, 0, 'bullet2');
         b.name = 'bullet' + i;
         b.width = 50;
         b.height = 50;
@@ -425,6 +452,14 @@ function create() {
     explosions.forEach( function(explosion) {
         explosion.animations.add('explosion');
     });
+
+    powUp = game.add.group();
+    powUp.enableBody = true;
+    powUp.physicsBodyType = Phaser.Physics.ARCADE;
+   
+    
+    powUP.setAll('anchor.x', 0.5);
+    powUP.setAll('anchor.y', 0.5);
 
     game.camera.follow(sprite);   
     game.camera.deadzone = new Phaser.Rectangle(250, 200, 300, 200);
@@ -523,6 +558,7 @@ function update() {
 
     game.physics.arcade.overlap(enemyBullets, shield, hitShield, checkDis, this);
     game.physics.arcade.overlap(enemyBullets, sprite, hitPlayer, checkDis, this);
+    game.physics.arcade.overlap(powUp, sprite, changeWeapon, null, this);
        
     target.body.velocity.y = sprite.body.velocity.y;
     target.body.velocity.x = sprite.body.velocity.x;
@@ -640,6 +676,10 @@ function render() {
         
 function fireBullet () {
 
+    if (weapon === 'power-up') {
+        firePowerUp()
+    } else {
+
     if (game.time.now > bulletTime)
     {
         bullet = bullets.getFirstExists(false);
@@ -680,6 +720,7 @@ function fireBullet () {
             bullet.angle -= 40;      
             bullet.damageAmount = 10;
         }
+    }
     }
 }   
 
@@ -768,6 +809,8 @@ function breakBox(a, b) {
         emitterSmoke.x = a.x;
         emitterSmoke.y = a.y;
         emitterSmoke.start(true, 4000, null, 2);
+
+        powerUp(b.x, b.y);
     }  
 }
 
@@ -944,5 +987,103 @@ function updateText() {
 
     if (text) {
         text.setText("Shields: "+shield.health+"\nHealth: "+sprite.health);
+    }
+}
+
+function powerUp(x, y) {
+    let rnd = Math.floor(Math.random() * 10);
+    if (rnd === 0) {
+        var p = powUp.create(x, y, 'power-up');
+        //p.velocity.x =
+        p.length = 20;
+        p.height = 20;
+        let r2 = Math.floor(Math.random() * 2); 
+        let r3 = Math.floor(Math.random() * 2);
+
+        if (r2 === 0) {
+            p.body.acceleration.x = 20;
+        } else {
+            p.body.acceleration.x = -20;
+        }
+        if (r3 === 0) {
+            p.body.acceleration.y = 20;
+        } else {
+            p.body.acceleration.y = -20;
+        }
+        p.body.angularAcceleration = 30;
+
+        p.animations.add('spin', [0,1,2,3,4,5]);
+        p.animations.play('spin', 20, true);
+        
+        setTimeout(() => {
+            p.body.velocity.setTo(0);
+        }, 2000)
+
+    }    
+}
+
+function changeWeapon() {
+    weapon = 'upgrade';
+    ammo = 5;
+}
+
+function firePowerUp() {
+    if (game.time.now > bulletTime)
+    {
+        bullet = bullets2.getFirstExists(false);
+        bullet.exists = true;
+        
+        let bullet2 = bullets2.getFirstExists(false);
+        bullet2.exists = true;
+        
+        let bullet3 = bullets2.getFirstExists(false);
+        bullet3.exists = true;
+        
+        let bullet4 = bullets2.getFirstExists(false);
+        bullet4.exists = true;
+        
+        let bullet5 = bullets2.getFirstExists(false);
+        bullet5.exists = true;
+
+        let allBullets = [bullet, bullet2, bullet3, bullet4, bullet5];
+
+        if (allBullets)
+        {   
+            for (let i = 0; i < 5; i++) {        
+            allBullets[i].reset(sprite.x , sprite.y);
+ 
+            allBullets[i].body.velocity.y = (target.y - sprite.y) * 10;
+       
+            allBullets[i].body.velocity.x = (target.x - sprite.x) * 10;
+            //allBullets[i]Time = game.time.now + 150;
+           // allBullets[i].anchor.setTo(0.5);
+            allBullets[i].lifespan = 5000;
+            //allBullets[i].addChild(emitterallBullets[i]);
+            
+            
+            const rnd = Math.floor(Math.random() * 4);
+
+            if (rnd === 0) {
+                allBullets[i].body.angularVelocity = -290;
+            } else if (rnd === 1) {
+                allBullets[i].body.angularVelocity = 290;
+            } else if (rnd === 2) {
+                allBullets[i].body.angularVelocity = -450;
+            } else if (rnd === 3) {
+                allBullets[i].body.angularVelocity = 450;
+            }
+            
+            //allBullets[i].body.angularVelocity = -90;
+            //allBullets[i].angle = -allBullets[i].y/10;
+            for (let i = 0; i < 100; i++) {
+                allBullets[i].angle = game.time.now + i;
+                allBullets[i].rotation = i/2;
+            }
+            targetAngle = game.physics.arcade.angleBetween(sprite, target);        
+            allBullets[i].rotation = targetAngle + ((i - 2) * 15);            
+            allBullets[i].angle -= 40;      
+            allBullets[i].damageAmount = 10;
+        }
+        }
     }
 }
