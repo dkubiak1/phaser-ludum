@@ -1385,15 +1385,15 @@ function menu(restart, win = false) {
         }
 
         //game.paused = true
-        var div = document.getElementById('game-over');
-        div.innerText = 'true';
-        //var frame = document.getElementById('your-frame-id'); 
-        //var gOver = 
+        // var div = document.getElementById('game-over');
+        // div.innerText = 'true';
+        // //var frame = document.getElementById('your-frame-id'); 
+        // //var gOver = 
 
-           // frame.contentWindow.postMessage(score, '*'); 
+        //    // frame.contentWindow.postMessage(score, '*'); 
 
-        var div2 = document.getElementById('score');
-        div2.innerText = score;
+        // var div2 = document.getElementById('score');
+        // div2.innerText = score;
 
         menu.events.onInputUp.add(function () {
             //game.paused = false;
