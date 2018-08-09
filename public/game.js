@@ -1467,7 +1467,7 @@ function receiveMessage(event)
 
   // event.source is window.opener
   // event.data is "hello there!"
-
+//bbblah
   // Assuming you've verified the origin of the received message (which
   // you must do in any case), a convenient idiom for replying to a
   // message is to call postMessage on event.source and provide
