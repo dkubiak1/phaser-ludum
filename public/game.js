@@ -358,6 +358,9 @@ var legs;
 
 var dead = 0;
 
+var over = false;
+var INFO = {over, score};
+
 // var enemy1Spawns = {1: {x:200, y:300}, 2: {x:100, y:200}}
 var enemy1Spawns = [[200,300],[100,200],[500,600],[800,750],[900,400],[1700,1200],[1600,300],[1400,200],[1200,900],[1400,1000],[1000,900],[300,1200],[1000,400],[500,500],[800,700],[500,900],[450,670],[200,100],[600,300],[750,800]] //20
 function create() {
@@ -1383,7 +1386,7 @@ function menu(restart, win = false) {
         } else {
             var txt = game.add.text(350, 250, "You win!! \nCongratulations!\n Your score was "+score+"\nClick to try again!");
         }
-
+        over = true;
         //game.paused = true
         // var div = document.getElementById('game-over');
         // div.innerText = 'true';
@@ -1399,13 +1402,15 @@ function menu(restart, win = false) {
             //game.paused = false;
             
             game.state.restart();
-            div.innerText = '';
+            // /div.innerText = '';
 
             score = 0;
             shield.health = shield.maxHealth;
             sprite.health = sprite.maxHealth;
             weapon = 'default';
             dead = 0;
+
+            over = false;
         }); 
     } else {
         var txt = game.add.text(350, 250, "Welcome to Ludum!\n WASD keys to move/aim \nSPACE to fire \nSHIFT to activate shield \nClick to Begin!"); 
@@ -1472,8 +1477,10 @@ function receiveMessage(event)
   // you must do in any case), a convenient idiom for replying to a
   // message is to call postMessage on event.source and provide
   // event.origin as the targetOrigin.
-  event.source.postMessage(score,
-                           event.origin);
+//   event.source.postMessage(score,
+//                            event.origin);
+event.source.postMessage(INFO,
+                                event.origin);
 }
 
 window.addEventListener("message", receiveMessage, false);
