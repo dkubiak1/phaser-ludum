@@ -1387,6 +1387,10 @@ function menu(restart, win = false) {
         //game.paused = true
         var div = document.getElementById('game-over');
         div.innerText = 'true';
+        //var frame = document.getElementById('your-frame-id'); 
+        //var gOver = 
+
+           // frame.contentWindow.postMessage(score, '*'); 
 
         var div2 = document.getElementById('score');
         div2.innerText = score;
@@ -1454,3 +1458,22 @@ function LOS(enemy) {
 function die() {
     menu(true)
 }
+
+function receiveMessage(event)
+{
+  // Do we trust the sender of this message?
+//   if (event.origin !== "http://example.com:8080")
+//     return;
+
+  // event.source is window.opener
+  // event.data is "hello there!"
+
+  // Assuming you've verified the origin of the received message (which
+  // you must do in any case), a convenient idiom for replying to a
+  // message is to call postMessage on event.source and provide
+  // event.origin as the targetOrigin.
+  event.source.postMessage(score,
+                           event.origin);
+}
+
+window.addEventListener("message", receiveMessage, false);
